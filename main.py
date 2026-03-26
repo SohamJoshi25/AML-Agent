@@ -32,6 +32,7 @@ def process_transaction(txn):
 
 
 def start_consumer():
+    print(f"Consumer started on {KAFKA_BOOTSTRAP} for topic: {KAFKA_TOPIC}")
     consumer = KafkaConsumer(
         KAFKA_TOPIC,
         bootstrap_servers=KAFKA_BOOTSTRAP,
