@@ -1,0 +1,12 @@
+class TransactionDTO:
+    transactionId: str
+    timestamp: str
+    fromBank: str
+    fromAccount: str
+    toBank: str
+    toAccount: str
+    amountReceived: float
+    receivingCurrency: str
+    amountPaid: float
+    paymentCurrency: str
+    paymentFormat: str

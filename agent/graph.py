@@ -3,9 +3,9 @@ from langgraph.prebuilt import ToolNode
 
 from agent.state import AgentState
 from agent.nodes import agent_node, should_continue
-from agent.tools import get_account_info, get_recent_transactions, report_fraud
+from agent.tools import get_account_info, get_recent_transactions, report_fraud, get_xgboost_prediction
 
-tools = [get_account_info, get_recent_transactions, report_fraud]
+tools = [get_account_info, get_recent_transactions, report_fraud, get_xgboost_prediction]
 
 def build_graph():
     graph = StateGraph(AgentState)

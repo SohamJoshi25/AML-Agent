@@ -4,3 +4,8 @@ langchain-openai
 kafka-python
 requests
 python-dotenv
+scikit-learn==1.6.1
+pandas
+joblib
+imblearn
+xgboost

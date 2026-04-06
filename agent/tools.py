@@ -1,6 +1,6 @@
 from langchain.tools import tool
-from agent.state import AgentState
 from services.bank_api import send_fraud_alert
+from model.xgb.predictions import predict_xgb
 
 @tool
 def get_account_info(account_id: str) -> dict:
@@ -10,10 +10,32 @@ def get_account_info(account_id: str) -> dict:
 
     return {
         "account_id":account_id,
-        "avg_txn": 2000,
-        "txn_count_24h": 10,
-        "risk_flag": False
+        "avg_txn": 1000000,
+        "txn_count_24h": 9999
     }
+
+@tool
+def get_xgboost_prediction(txn: dict) -> dict:
+    """
+    CRITICAL: This tool MUST be used to determine fraud probability.
+    Always call this before making any fraud decision.
+
+    You MUST call get_xgboost_prediction EXACTLY like this:
+
+    {
+    "txn": <FULL transaction object>
+    }
+
+    Returns:
+    - prediction: 0 or 1
+    - probability: fraud probability score
+    """
+
+    print("TOOL: predict_xgb")
+    
+    return predict_xgb(txn)
+
+
 
 @tool
 def get_recent_transactions(account_id: str) -> list:
@@ -37,13 +59,18 @@ def report_fraud(account_id: str, amount: float, reason: str) -> str:
     Args: account_id: str, amount: float, reason: str
     """
 
-    print("TOOL: report_fraud")
+    try:
 
-    payload = {
-        "account_id": account_id,
-        "amount": amount,
-        "reason": reason
-    }
+        print("TOOL: report_fraud")
 
-    send_fraud_alert(payload)
-    return "fraud has been reported to bank"
+        payload = {
+            "account_id": account_id,
+            "amount": amount,
+            "reason": reason
+        }
+
+        send_fraud_alert(payload)
+        return "fraud has been reported to bank"
+
+    except Exception as e:
+        return "some error occured while reporting to bank"
