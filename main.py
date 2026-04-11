@@ -48,16 +48,31 @@ def start_consumer():
 
 if __name__ == "__main__":
     # start_consumer()
+
+    # process_transaction( {
+    #     "transactionId": "a1f3c9d2-7b6e-4d1a-9c3f-2e5b7a8d1001",
+    #     "timestamp": "2022-09-01T00:20:00",
+    #     "fromBank": "12",
+    #     "fromAccount": "800131B10",
+    #     "toBank": "11642",
+    #     "toAccount": "8131A9A80",
+    #     "amountReceived": 46.86,
+    #     "receivingCurrency": "US Dollar",
+    #     "amountPaid": 46.86,
+    #     "paymentCurrency": "US Dollar",
+    #     "paymentFormat": "Credit Card"
+    # })
+
     process_transaction( {
         "transactionId": "a1f3c9d2-7b6e-4d1a-9c3f-2e5b7a8d1001",
-        "timestamp": "2022-09-01T00:20:00",
-        "fromBank": "12",
-        "fromAccount": "800131B10",
-        "toBank": "11642",
-        "toAccount": "8131A9A80",
-        "amountReceived": 46.86,
-        "receivingCurrency": "US Dollar",
-        "amountPaid": 46.86,
-        "paymentCurrency": "US Dollar",
-        "paymentFormat": "Credit Card"
+        "timestamp": "2022-09-04T14:59:00",
+        "fromBank": "0048309",
+        "fromAccount": "811C599A0",
+        "toBank": "0119",
+        "toAccount": "811C597B0",
+        "amountReceived": 64379.45,
+        "receivingCurrency": "Saudi Riyal",
+        "amountPaid": 64379.45,
+        "paymentCurrency": "Saudi Riyal",
+        "paymentFormat": "ACH"
     })
