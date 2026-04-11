@@ -165,7 +165,7 @@ def get_recent_transactions(account_id: str, last: int = 10) -> list:
 
     # return filtered
 
-    return get_previous_account_transactions(str,last)
+    return get_previous_account_transactions(account_id,last)
 
 @tool
 def report_fraud(account_id: str, blacklist_level: str, reason: str) -> str:
