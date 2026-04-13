@@ -12,7 +12,9 @@ app = build_graph()
 
 
 def process_transaction(txn):
+
     print(f"Transaction: {txn}")
+
     result = app.invoke({
         "transaction": txn,
         "messages":[]
@@ -23,14 +25,10 @@ def process_transaction(txn):
     
     for msg in messages:
         if isinstance(msg, AIMessage):
-            last_ai = msg
+            print(msg)
+            
 
-    if last_ai:
-        print(last_ai.content.strip())
-    else:
-        print(messages[-1])
-
-    print(result)
+    
 
     
 def start_consumer():

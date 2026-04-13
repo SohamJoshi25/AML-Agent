@@ -8,15 +8,15 @@ def get_account_info(account_id: str) -> dict:
     Args: account_id: str
     """
 
-    # account = MOCK_ACCOUNTS.get(account_id)
+    account = MOCK_ACCOUNTS.get(account_id)
 
-    # if not account:
-    #     return {
-    #         "accountId": account_id,
-    #         "status": "UNKNOWN",
-    #         "risk": "unknown"
-    #     }
-    # return account
+    if not account:
+        return {
+            "accountId": account_id,
+            "status": "UNKNOWN",
+            "risk": "unknown"
+        }
+    return account
     
 
     return get_account_detail(account_id)
@@ -155,15 +155,15 @@ def get_recent_transactions(account_id: str, last: int = 10) -> list:
 
     print("TOOL: get_recent_transactions")
 
-    # filtered = [
-    #     txn for txn in MOCK_TXNS
-    #     if txn["fromAccount"] == account_id or txn["toAccount"] == account_id
-    # ]
+    filtered = [
+        txn for txn in MOCK_TXNS
+        if txn["fromAccount"] == account_id or txn["toAccount"] == account_id
+    ]
 
-    # # Optional: sort by timestamp (realistic behavior)
-    # filtered.sort(key=lambda x: x["timestamp"], reverse=True)
+    # Optional: sort by timestamp (realistic behavior)
+    filtered.sort(key=lambda x: x["timestamp"], reverse=True)
 
-    # return filtered
+    return filtered
 
     return get_previous_account_transactions(account_id,last)
 

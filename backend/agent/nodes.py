@@ -32,7 +32,7 @@ def agent_node(state: AgentState) -> AgentState:
 
                 Instructions:
                 - Analyze the transaction thoroughly
-                - FIRST call get_xgboost_prediction
+                - FIRST call get_xgboost_prediction tool
                 - Optionally call get_account_info or get_recent_transactions (max 3 times)
                 - Then make a FINAL decision
                 - if multiple accounts send funds into one account, classify as "fan-in" or "gather".
@@ -66,7 +66,7 @@ def agent_node(state: AgentState) -> AgentState:
 
                 Follow proper Mermaid diagram format. 
 
-                Diagram must include:
+                [IMP] Diagram must include:
                 - All unique accounts involved
                 - Direction of flow
                 - Self Loops if present (self Transfer)
@@ -82,7 +82,9 @@ def agent_node(state: AgentState) -> AgentState:
     print("Content:", response.content)
     print("Tool calls:", response.tool_calls)
     print()
+
     return {
+         **state,
         "messages": messages + [response]
     }
 

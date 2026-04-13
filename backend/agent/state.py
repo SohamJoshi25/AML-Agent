@@ -1,4 +1,4 @@
-from typing import List, TypedDict, Annotated, Sequence
+from typing import List, Optional, TypedDict, Annotated, Sequence
 
 from langgraph.graph.message import add_messages
 
