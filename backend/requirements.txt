@@ -9,3 +9,6 @@ pandas
 joblib
 imblearn
 xgboost
+sqlalchemy
+fastapi
+asyncio
