@@ -12,8 +12,7 @@ MODEL_PATH = os.path.join(BASE_DIR, "xgb_pipeline.pkl")
 
 model = joblib.load(MODEL_PATH)
 
-def predict_xgb(txn: dict) -> dict:
+def predict_xgb(txn: dict) -> float:
     df = pd.DataFrame([normalize_txn(txn)])
-    pred = model.predict(df)[0]
     prob = model.predict_proba(df)[0][1]
-    return {"prediction":pred,"probability":prob}
+    return prob

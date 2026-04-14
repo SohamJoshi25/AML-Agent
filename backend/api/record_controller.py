@@ -4,10 +4,9 @@ from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from database.postgres import get_db
-from dto.record import RecordSchema
+from dto.record_dto import RecordDTO
 from schema.record import Record
 from core.queue import event_queue
-
 import json
 from datetime import datetime
 
@@ -16,7 +15,7 @@ router = APIRouter(
     tags=["Records"]
 )
 
-@router.get("/", response_model=list[RecordSchema])
+@router.get("/", response_model=list[RecordDTO])
 def getAllRecords(limit: int = Query(30, ge=1), db: Session = Depends(get_db)):
     return db.query(Record).order_by(
         Record.timestamp.desc()
@@ -35,16 +34,26 @@ async def stream_events():
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 
-
-def save_transaction(txn, result):
+def save_transaction(data: dict):
     db_gen = get_db()
     db = next(db_gen)
 
     try:
         record = Record(
-            transactionId=txn["transactionId"],
-            timestamp=datetime.fromisoformat(txn["timestamp"]),
-            data=str(result)  # ✅ full result stored
+            transactionId=data["transactionId"],
+            timestamp=data["timestamp"] if isinstance(data["timestamp"], datetime)
+                     else datetime.fromisoformat(data["timestamp"]),
+
+            diagram=data.get("diagram"),
+            reason=data.get("reason"),
+            pattern=data.get("pattern"),
+
+            related_ids=data.get("related_ids", []),
+
+            fraud_score=data.get("fraud_score"),
+            risk_level=data.get("risk_level"),
+
+            isFraud=data.get("isFraud", True)
         )
 
         db.add(record)

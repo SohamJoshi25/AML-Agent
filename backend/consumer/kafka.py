@@ -1,12 +1,11 @@
 import asyncio
 
 from kafka import KafkaConsumer
-from langchain_core.messages import AIMessage
+from core.queue import event_queue
 import json
 from agent.graph import build_graph
 from config.settings import KAFKA_TOPIC, KAFKA_BOOTSTRAP
 from dotenv import load_dotenv
-from core.queue import event_queue
 import core.runtime as runtime
 
 from api.record_controller import save_transaction
@@ -24,24 +23,36 @@ async def process_transaction(txn):
         "messages": []
     })
 
+    txn_id = txn.get("transactionId")
+    timestamp = txn["timestamp"]
+    diagram = result.get("diagram", "")
+    reason = result.get("reason", "")
+    pattern = result.get("pattern","")
+    related_transactions = result.get("related_transactions",[])
+    related_ids = [
+        t.get("transactionId")
+        for t in related_transactions
+    ]
+    fraud_score = result.get("fraud_score",-1)
+    risk_level = result.get("risk_level",-1)
 
-    messages = result.get("messages", [])
-    AIMessages = ""
-    
+    data = {
+        "transactionId":txn_id,
+        "timestamp": timestamp,
+        "diagram": diagram,
+        "reason": reason,
+        "pattern": pattern,
+        "related_ids": related_ids,
+        "fraud_score": fraud_score,
+        "risk_level": risk_level
+    }
 
-    for msg in messages:
-        if isinstance(msg, AIMessage):
-            AIMessages += str(msg) + "\n"
-    
-    print(AIMessages)
 
-    save_transaction(txn, AIMessages)
+    print(data)
 
-    await event_queue.put({
-        "transactionId": txn["transactionId"],
-        "timestamp": txn["timestamp"],
-        "data": AIMessages 
-    })
+    save_transaction(data)
+
+    await event_queue.put(data)
 
     
 def start_consumer():
@@ -65,24 +76,9 @@ def start_consumer():
             runtime.main_loop
         )
 
-if __name__ == "__main__":
-    # start_consumer()
+async def main():
 
-    process_transaction( {
-        "transactionId": "a1f3c9d2-7b6e-4d1a-9c3f-2e5b7a8d1001",
-        "timestamp": "2022-09-01T00:20:00",
-        "fromBank": "12",
-        "fromAccount": "800131B10",
-        "toBank": "11642",
-        "toAccount": "8131A9A80",
-        "amountReceived": 46.86,
-        "receivingCurrency": "US Dollar",
-        "amountPaid": 46.86,
-        "paymentCurrency": "US Dollar",
-        "paymentFormat": "Credit Card"
-    })
-
-    process_transaction( {
+    txn = {
         "transactionId": "a1f3c9d2-7b6e-4d1a-9c3f-2e5b7a8d1001",
         "timestamp": "2022-09-04T14:59:00",
         "fromBank": "0048309",
@@ -94,4 +90,11 @@ if __name__ == "__main__":
         "amountPaid": 64379.45,
         "paymentCurrency": "Saudi Riyal",
         "paymentFormat": "ACH"
-    })
+    }
+
+    await process_transaction(txn)
+     
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

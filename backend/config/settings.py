@@ -3,4 +3,4 @@ KAFKA_BOOTSTRAP = "localhost:9092"
 
 BANK_API_URL = "http://localhost:8000"
 
-LLM_MODEL = "gpt-4o"
+LLM_MODEL = "gpt-4o-mini"

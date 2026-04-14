@@ -5,12 +5,15 @@ import threading
 from fastapi import FastAPI
 from sqlalchemy import text
 from database.postgres import get_db, engine, Base
-from schema.record import Record   
+from schema.record import Base   
 from consumer.kafka import start_consumer
 from api.record_controller import router as record_router
 
 from core.runtime import main_loop as _main_loop
 import core.runtime as runtime
+
+
+
 
 
 @asynccontextmanager
@@ -20,7 +23,7 @@ async def lifespan(app: FastAPI):
     try:
         db_generator = get_db()
         db = next(db_generator)
-
+        Base.metadata.create_all(bind=engine)
         db.execute(text("SELECT 1"))
 
         print("✅ Database Connected Successfully")
@@ -41,8 +44,6 @@ async def lifespan(app: FastAPI):
 
     # 🔻 SHUTDOWN LOGIC (optional)
     print("🛑 Application shutting down")
-
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(lifespan=lifespan)
 
