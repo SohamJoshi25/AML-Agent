@@ -29,9 +29,17 @@ async def stream_events():
         while True:
             data = await event_queue.get()
             safe_data = str(data) 
-            yield f"data: {safe_data}\n\n"
+            yield f"data: {json.dumps(data, default=str)}\n\n"
 
-    return StreamingResponse(event_generator(), media_type="text/event-stream")
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Access-Control-Allow-Origin": "http://localhost:5173", # 👈 important
+        },
+    )
 
 
 def save_transaction(data: dict):

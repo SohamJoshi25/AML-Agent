@@ -12,7 +12,7 @@ class RecordDTO(BaseModel):
     reason: str
     pattern: str | None
 
-    related_ids: dict
+    related_ids: List[str]
 
     fraud_score: float
     risk_level: str
