@@ -1,0 +1,3 @@
+[submodule "BankServerMicroService"]
+	path = BankServerMicroService
+	url = https://github.com/DevayaniJoshi/BankServerMicroService
