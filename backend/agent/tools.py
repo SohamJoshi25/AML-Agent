@@ -23,7 +23,7 @@ def get_account_info(account_id: str) -> dict:
 
 @tool
 def get_recent_transactions(account_id: str, last: int = 10) -> list:
-    """Get recent transactions
+    """Get recent transactionss
     Args: account_id: str, last: Fetch last 'N' transactions(int)
 
     Do not use 'fromBank' or 'toBank'. 
@@ -42,7 +42,8 @@ def get_recent_transactions(account_id: str, last: int = 10) -> list:
 
     # return filtered
 
-    return get_previous_account_transactions(account_id,last)
+    val = get_previous_account_transactions(account_id,last)
+    return val
 
 @tool
 def report_fraud(account_id: str, blacklist_level: str, reason: str) -> str:

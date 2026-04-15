@@ -115,10 +115,13 @@ def pattern_node(state: AgentState) -> AgentState:
     txns = []
 
     for msg in messages:
-        if isinstance(msg, ToolMessage) and msg.name == "get_recent_transactions":
-            data = json.loads(msg.content)
-            txns.extend(data)
+        try:
+            if isinstance(msg, ToolMessage) and msg.name == "get_recent_transactions":
+                data = json.loads(msg.content)
+                txns.extend(data)
 
+        except Exception as e:
+            print(e)
 
     prompt = f"""
         Classify fraud pattern ONLY.
@@ -159,7 +162,8 @@ def pattern_node(state: AgentState) -> AgentState:
         "related_transactions":txns
     }
 
-def diagram_node(state: AgentState) -> dict:
+
+def diagram_node(state: dict) -> dict:
     print("NODE: diagram_node")
 
     txn = state["transaction"]
@@ -181,18 +185,20 @@ def diagram_node(state: AgentState) -> dict:
 
     diagram = "graph LR\n"
 
-    # nodes
-    for n in nodes:
-        diagram += f'{n}["{n}"]\n'
+    node_id_map = {}
+    for i, n in enumerate(nodes):
+        node_id_map[n] = f"N{i}"
 
-    # edges (aggregated)
+    for real, safe in node_id_map.items():
+        diagram += f'{safe}["{real}"]\n'
+
     for (f, to), txns in edge_map.items():
         count = len(txns)
         total = sum(t["amountPaid"] for t in txns)
 
-        label = f"{count} txns | {round(total,2)}"
+        label = f"{count} txns / {round(total,2)}"
 
-        diagram += f'{f} -->|{label}| {to}\n'
+        diagram += f'{node_id_map[f]} -->|{label}| {node_id_map[to]}\n'
 
     return {
         "diagram": diagram

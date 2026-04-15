@@ -12,7 +12,7 @@ from api.record_controller import router as record_router
 from core.runtime import main_loop as _main_loop
 import core.runtime as runtime
 
-
+from fastapi.middleware.cors import CORSMiddleware
 
 
 
@@ -46,6 +46,14 @@ async def lifespan(app: FastAPI):
     print("🛑 Application shutting down")
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # your frontend
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(record_router)
 
