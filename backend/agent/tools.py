@@ -1,4 +1,5 @@
 from langchain.tools import tool
+from config.settings import MOCK_API
 from services.bank_api import send_fraud_alert, get_account_detail, get_previous_account_transactions
 from model.xgb.predictions import predict_xgb
 
@@ -8,15 +9,17 @@ def get_account_info(account_id: str) -> dict:
     Args: account_id: str
     """
 
-    # account = MOCK_ACCOUNTS.get(account_id)
+    if MOCK_API:
 
-    # if not account:
-    #     return {
-    #         "accountId": account_id,
-    #         "status": "UNKNOWN",
-    #         "risk": "unknown"
-    #     }
-    # return account
+        account = MOCK_ACCOUNTS.get(account_id)
+
+        if not account:
+            return {
+                "accountId": account_id,
+                "status": "UNKNOWN",
+                "risk": "unknown"
+            }
+        return account
     
 
     return get_account_detail(account_id)
@@ -32,15 +35,17 @@ def get_recent_transactions(account_id: str, last: int = 10) -> list:
 
     print("TOOL: get_recent_transactions")
 
-    # filtered = [
-    #     txn for txn in MOCK_TXNS
-    #     if txn["fromAccount"] == account_id or txn["toAccount"] == account_id
-    # ]
+    if MOCK_API:
 
-    # # Optional: sort by timestamp (realistic behavior)
-    # filtered.sort(key=lambda x: x["timestamp"], reverse=True)
+        filtered = [
+            txn for txn in MOCK_TXNS
+            if txn["fromAccount"] == account_id or txn["toAccount"] == account_id
+        ]
 
-    # return filtered
+        # Optional: sort by timestamp (realistic behavior)
+        filtered.sort(key=lambda x: x["timestamp"], reverse=True)
+
+        return filtered
 
     val = get_previous_account_transactions(account_id,last)
     return val
@@ -62,7 +67,9 @@ def report_fraud(account_id: str, blacklist_level: str, reason: str) -> str:
             "reason": reason
         }
 
-        send_fraud_alert(payload)
+        if not MOCK_API:
+            send_fraud_alert(payload)
+
         return "fraud has been reported to bank"
 
     except Exception as e:

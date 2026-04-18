@@ -1,4 +1,4 @@
-import { RecordCard } from "@/components/layout/RecordCard";
+import { RecordRow } from "@/components/layout/RecordRow";
 import type { RecordDTO } from "@/types/RecordDTO";
 import { useEffect, useState } from "react";
 
@@ -40,15 +40,23 @@ const Dashboard = () => {
   });
 
   return (
-    <div className="p-6 bg-gray-950 min-h-screen text-white">
-      <h1 className="text-2xl font-semibold mb-6">Fraud Dashboard</h1>
+  <div className="p-6 bg-gray-50 min-h-screen text-gray-900">
+    <h1 className="text-2xl font-semibold mb-6">Fraud Dashboard</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {records.map((record) => (
-          <RecordCard key={record.transactionId} record={record} />
-        ))}
+    <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+      <div className="grid grid-cols-12 px-4 py-3 text-xs font-medium text-gray-500 border-b bg-gray-50">
+        <div className="col-span-4">Transaction</div>
+        <div className="col-span-2">Timestamp</div>
+        <div className="col-span-4">Score</div>
+        <div className="col-span-1 ml-8">Risk</div>
+        <div className="col-span-1 text-right">Status</div>
       </div>
+
+      {records.map((record) => (
+        <RecordRow key={record.transactionId} record={record} />
+      ))}
     </div>
+  </div>
   );
 };
 
