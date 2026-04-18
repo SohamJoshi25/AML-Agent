@@ -10,5 +10,5 @@ export type RecordDTO = {
 
   fraud_score: number;
   risk_level: string;
-  isFraud: boolean;
+  is_fraud: boolean;
 };

@@ -64,7 +64,7 @@ export const RecordRow = ({ record }: { record: RecordDTO }) => {
 
         {/* Status */}
         <div className="col-span-1 text-right">
-          {record.isFraud ? (
+          {record.is_fraud ? (
             <span className="text-red-500 text-xs font-semibold">Fraud</span>
           ) : (
             <span className="text-gray-400 text-xs">OK</span>

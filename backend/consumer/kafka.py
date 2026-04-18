@@ -15,42 +15,47 @@ app = build_graph()
 
 
 async def process_transaction(txn):
-
     print(f"Transaction: {txn}")
 
-    result = app.invoke({
-        "transaction": txn,
-        "messages": []
-    })
+    # 🚀 offload blocking graph computation
+    result = await asyncio.to_thread(
+        app.invoke,
+        {
+            "transaction": txn,
+            "messages": []
+        }
+    )
 
     txn_id = txn.get("transactionId")
     timestamp = txn["timestamp"]
+
     diagram = result.get("diagram", "")
     reason = result.get("reason", "")
     pattern = result.get("pattern","")
-    related_transactions = result.get("related_transactions",[])
-    related_ids = [
-        t.get("transactionId")
-        for t in related_transactions
-    ]
-    fraud_score = result.get("fraud_score",-1)
-    risk_level = result.get("risk_level",-1)
+    related_transactions = result.get("related_transactions", [])
+
+    related_ids = [t.get("transactionId") for t in related_transactions]
+
+    fraud_score = result.get("fraud_score", -1)
+    is_fraud = result.get("is_fraud", False)
+    risk_level = result.get("risk_level", -1)
 
     data = {
-        "transactionId":txn_id,
+        "transactionId": txn_id,
         "timestamp": timestamp,
         "diagram": diagram,
         "reason": reason,
         "pattern": pattern,
         "related_ids": related_ids,
         "fraud_score": fraud_score,
-        "risk_level": risk_level
+        "risk_level": risk_level,
+        "is_fraud": is_fraud
     }
-
 
     print(data)
 
-    save_transaction(data)
+    # 🚀 offload DB write
+    await asyncio.to_thread(save_transaction, data)
 
     await event_queue.put(data)
 

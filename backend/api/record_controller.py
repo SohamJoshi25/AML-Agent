@@ -61,7 +61,7 @@ def save_transaction(data: dict):
             fraud_score=data.get("fraud_score"),
             risk_level=data.get("risk_level"),
 
-            isFraud=data.get("isFraud", True)
+            is_fraud=data.get("is_fraud", True)
         )
 
         db.add(record)

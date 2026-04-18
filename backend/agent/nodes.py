@@ -106,6 +106,18 @@ def should_continue(state: AgentState) -> Literal["tools", "end"]:
 
     return "end"
 
+
+def should_continue_reporting(state: AgentState) -> Literal["report", "end"]:
+    print("EDGE: should_continue_reporting")
+    
+    is_fraud = state.get("is_fraud", True)
+
+    if is_fraud :
+        return "report"
+
+    return "end"
+    
+
 def pattern_node(state: AgentState) -> AgentState:
     print("NODE: pattern_node")
 
@@ -204,59 +216,58 @@ def diagram_node(state: dict) -> dict:
         "diagram": diagram
     }
 
-def final_decision_node(state: AgentState) -> dict:
-    print("NODE: final_decision_node")
-
-    txn = state["transaction"]
-    pattern = state["pattern"]
-    messages = state["messages"]
-    risk_level = state["risk_level"]
-
-    fraud_score = state.get("fraud_score", 0)
-
-    prompt = f"""
-        Generate fraud explanation
-
-        Tools:
-        report_fraud(txn)
-
-        Transaction: {txn}
-        Possible Pattern: {pattern}
-        Fraud Score: {fraud_score}
-        Risk Level: {risk_level}
-
-        Return JSON:
-
-        {{
-            "reason": string,
-            "isFraud": boolean
-        }}
-
-        Rules:
-        - If fraud → explain why suspicious and call the report_fraud tool
-        - If not → explain why safe
-        - Be precise and factual
-        - No markdown
-
-
-        """
-
-    response = llm_no_tools.invoke(messages + [HumanMessage(content=prompt)])
-    
-
+def final_explaination_node(state: AgentState) -> dict:
     try:
+        print("NODE: final_explaination_node")
+
+        txn = state.get("transaction")
+        pattern = state.get("pattern", "single transaction")
+        messages = state.get("messages", [])
+        risk_level = state.get("risk_level", "LOW")
+        fraud_score = state.get("fraud_score", 0)
+
+        prompt = f"""
+            Generate fraud explanation
+
+            Tools:
+            report_fraud(txn)
+
+            Transaction: {txn}
+            Possible Pattern: {pattern}
+            Fraud Score: {fraud_score}
+            Risk Level: {risk_level}
+
+            Always return JSON:
+
+            {{
+                "reason": string
+            }}
+
+            Rules:
+            - If fraud → explain why it is suspicious
+            - If it is not fraud → explain why it is safe
+            - Be precise and factual
+            - No markdown
+            """
+
+        response = llm_no_tools.invoke(messages + [HumanMessage(content=prompt)])
+    
         parsed = json.loads(clean_json_output(response.content))
         reason = parsed.get("reason", "")
-        is_fraud = parsed.get("isFraud", False)
 
     except Exception as e:
         print(e)
         reason = "Unable to generate explanation"
-        is_fraud = False
+
+    # decision
+    is_fraud = (
+        fraud_score > 0.9 or
+        (fraud_score > 0.7 and risk_level != "LOW")
+    )
 
     return {
         "messages": messages,
-        "isFraud": is_fraud,
+        "is_fraud": is_fraud,
         "reason": reason
     }
 
@@ -266,7 +277,7 @@ def final_reporting_node(state: AgentState) -> dict:
     txn = state["transaction"]
     analysis = state.get("analysis", {})
     messages = state.get("messages", [])
-    reason = state.get("reason", [])
+    reason = state.get("reason", "")
 
 
     prompt = f"""
@@ -284,7 +295,7 @@ def final_reporting_node(state: AgentState) -> dict:
         {reason}
 
         Rules:
-        - If isFraud = true → call report_fraud
+        - If is_fraud = true → call report_fraud
         - Choose blacklist_level:
             - BLACK → high risk
             - GREY → medium risk

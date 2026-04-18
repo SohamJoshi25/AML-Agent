@@ -5,7 +5,7 @@ import threading
 from fastapi import FastAPI
 from sqlalchemy import text
 from database.postgres import get_db, engine, Base
-from schema.record import Base   
+from schema.record import Base
 from consumer.kafka import start_consumer
 from api.record_controller import router as record_router
 

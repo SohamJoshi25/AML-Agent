@@ -20,4 +20,4 @@ class Record(Base):
     fraud_score = Column(Float, nullable=False)
     risk_level = Column(String, nullable=False)
 
-    isFraud = Column(Boolean, nullable=False)
+    is_fraud = Column(Boolean, nullable=False)

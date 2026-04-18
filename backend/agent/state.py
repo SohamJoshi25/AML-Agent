@@ -13,7 +13,7 @@ class AgentState(TypedDict):
 
     fraud_score: Optional[float]
     risk_level: Optional[str]
-    isFraud: Optional[bool]
+    is_fraud: Optional[bool]
 
     steps: Optional[int]
     pattern: Optional[str]

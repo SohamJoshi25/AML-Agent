@@ -16,7 +16,7 @@ class RecordDTO(BaseModel):
 
     fraud_score: float
     risk_level: str
-    isFraud: bool
+    is_fraud: bool
 
     class Config:
         from_attributes = True
