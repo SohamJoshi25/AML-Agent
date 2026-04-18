@@ -116,13 +116,6 @@ Complex multi-hop transfers to obscure origin.
 - Human-in-the-loop verification workflow  
 - Live updates using Server-Sent Events (SSE)  
 
----
-
-## Architecture Flow
-
-```
-Bank Simulation → Kafka → AML Backend → ML + LLM + Graph → Database → Dashboard (SSE)
-```
 
 ---
 
@@ -155,12 +148,3 @@ Bank Simulation → Kafka → AML Backend → ML + LLM + Graph → Database → 
 - TailwindCSS  
 - Mermaid.js  
 
----
-
-## Future Improvements
-
-- Role-based access control (Analyst / Admin)  
-- Audit logs and decision history  
-- Advanced explainability dashboards  
-- Alerting system (email/webhooks)  
-- Dark mode  
